@@ -1,4 +1,4 @@
-# AWS Load Balanced Website + DNS + CDN
+# AWS Load Balanced Website + DNS + CDN + RDS + EFS
 
 This project aims to deploy a sample website in a load-balanced, highly available, and resilient manner utilizing automation and AWS best practices.
 
