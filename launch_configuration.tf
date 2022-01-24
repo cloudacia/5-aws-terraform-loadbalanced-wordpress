@@ -7,12 +7,4 @@ resource "aws_launch_configuration" "as_conf01" {
   security_groups      = [aws_security_group.webserver.id, aws_security_group.administration.id]
   iam_instance_profile = aws_iam_instance_profile.instance_profile01.id
   user_data            = filebase64("bootstraping/script.sh")
-
-  depends_on = [
-    aws_db_instance.wordpress_db,
-    aws_efs_mount_target.wordpress-efs-1,
-    aws_efs_mount_target.wordpress-efs-2
-  ]
 }
-
-#

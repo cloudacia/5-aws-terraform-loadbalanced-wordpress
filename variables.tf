@@ -91,3 +91,39 @@ variable "ec2_ssh_key" {
   type    = string
   default = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC5PcvlG+/CdPKwiGirz0nHFetCcQBv3WGHuJ8ETcOwj4e88I2PAHB+PCB6kEDVJ6gf8E3XDBPV/C1WA4BhrTM+ksj1veroakfcjbC7i2JbwInlDwXCCD48u6dapQxyFf5I0PfB7V31xtDzvwnRatmgyw7huGSskaP36PKsMoEdOCbHt1nBHpzCujb8qSfr4biQiEau7ZPra/8EF+51TdqoprBB0bx+vTVez7hIjK0qv3MgMG1AdtCn4VzpNSgCXTaszJSLi/tOa9nT9rnweZNzQ0BrpfPrHcFqodI/Ec0h5ukaCZvgfX/USj9dSYMTB+24OXdiRKKJsZ+Q2vAAlOHUU1kn2edokOxIvPrbhjo2/5Ma1VgoYUDagdGW0QPudn8Kk5VfuUA2S/cXrZZDKzzsx1VHY9eX+DAd1rDSR1yhoxVXTkYlGyXSclweqSf1WF8GnvK40gHXvLyfBM6Jqh50ASG9yNVGvI0pQG3ZNg+UcbWw8S8cLipdegLEOQuJQmU="
 }
+
+# RDS ENGINE
+variable "rds_engine" {
+  type    = string
+  default = "mysql"
+}
+
+# RDS ENGINE VERSION
+variable "rds_engine_version" {
+  type    = string
+  default = "5.7"
+}
+
+# RDS INSTANCE CLASS
+variable "rds_instance_class" {
+  type    = string
+  default = "db.t3.micro"
+}
+
+# RDS DB NAME
+variable "rds_db_name" {
+  type    = string
+  default = "wordpress"
+}
+
+# RDS DB USERNAME
+variable "rds_db_username" {
+  type    = string
+  default = "admin"
+}
+
+# RDS DB USERNAME
+variable "rds_db_password" {
+  type    = string
+  default = "password1234"
+}
