@@ -18,31 +18,33 @@ Terraform manages the deployment.
 
 * 1 x VPC
 * 2 x Private subnets
-* 2 x Public subnets
+* 4 x Public subnets
 * 2 x NAT Gateways
 * 1 x Internet Gateway
 * 1 x ALB
 * 1 x ASG
 * 1 x Launch Configuration
 * 4 x EC2
-* 3 x Security Groups
+* 4 x Security Groups
 * 2 X CloudWatch Alarms
 * 1 x S3 bucket
 * 1 x IAM role
 * 1 x AIM policy
 * 1 x Route53 DNS A record
 * 1 x Bastion host
-* 1 x Cloudfront distribution
+* 1 x CDN distribution
+* 2 X EFS mount target
+* 1 x RDS
 
 **Getting started**
 
 Clone the repository locally in your system:
 
-`git clone https://github.com/cloudacia/terraform-lab02`
+`git clone https://github.com/cloudacia/terraform-lab13`
 
 Deploy the code in your AWS account with Terraform
 
-`cd terraform-lab12`
+`cd terraform-lab13`
 
 `terraform init`
 
@@ -71,8 +73,10 @@ Deploy the code in your AWS account with Terraform
 |-- storage.tf              # S3 buckets
 |-- dns.tf                  # DNS setting for a domain name
 |-- cdn.tf                  # Cloudfront distribution
+|-- rds.tf                  # MySQL
+|-- efs.tf                  # Share filesystem
 |-- output.tf               # Output values
-|-- bootstraping            # Initialization script
+|-- /bootstraping            # Initialization script
 |-- /app                    # Simple Python web app
 |-- diagram.png             # AWS network layout
 |-- LICENSE.txt
