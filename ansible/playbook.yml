@@ -1,0 +1,175 @@
+---
+- hosts: all
+  become: yes
+  gather_facts: yes
+  vars_files:
+    - vars/default.yml
+  tasks:
+
+  ##################################################
+  #                                                #
+  #   Mount EFS locally                            #
+  #                                                #
+  ##################################################
+
+  - name: Make directory downloads in /home/centos
+    file:
+      path: /home/centos/downloads
+      state: directory
+      mode: '0755'
+      #owner: centos
+      #group: centos
+
+  - name: Mount EFS into your local directory /home/centos/downloads
+    shell:
+      cmd: mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport {{ efs_file_system_id }}:/ /home/centos/downloads
+
+  ##################################################
+  #                                                #
+  #   Wordpress installation                       #
+  #                                                #
+  ##################################################
+
+  - name: Download Wordpress latest version
+    get_url:
+      url: "{{ wp_url_site }}"
+      dest: "{{ wp_dest_path }}"
+      mode: "{{ wp_dir_mode }}"
+
+  - name: Extract wordpress.tar.gz into /home/centos/downloads
+    unarchive:
+      src: "{{ wp_file_src }}"
+      dest: "{{ wp_file_dest }}"
+      #owner: "{{ wp_dir_owner }}"
+      #group: "{{ wp_dir_group }}"
+      remote_src: yes
+
+  - name:
+    group:
+      name: apache
+      state: present
+
+  - name:
+    user:
+      name: apache
+      group: apache
+      shell: /sbin/nologin
+      state: present
+
+  - name: Write the Wordpress configuration file
+    template:
+      src: "{{ wp_conf_template_file_src }}"
+      dest: "{{ wp_conf_template_file_dest }}"
+    #tags: wp_step_3
+
+  - name: Change permission on directory /home/centos/downloads/wordpress
+    file:
+      path: /home/centos/downloads/wordpress
+      owner: "{{ wp_dir_owner }}"
+      group: "{{ wp_dir_group }}"
+      mode: '0774'
+      recurse: yes
+
+
+  ##################################################
+  #                                                #
+  #   PHP 7.4 nstallation                          #
+  #                                                #
+  ##################################################
+
+  - name: Install Remi Repository
+    yum:
+      name: "{{ php_remi_repo }}"
+      state: present
+  - name: Install PHP packages and libraries
+    yum:
+      name:  "{{ item }}"
+      state: present
+    loop: "{{ php_modules }}"
+  - name: Create a symbolic link
+    file:
+      src: "{{ php_src }}"
+      dest: "{{ php_dest }}"
+      owner: root
+      group: root
+      state: link
+      force: yes
+
+  ##################################################
+  #                                                #
+  #   Wordpress CLI installation                   #
+  #                                                #
+  ##################################################
+
+  - name: Downlading WP CLI
+    shell:
+      chdir: "{{ working_dir }}"
+      cmd: curl -O "{{ wp_cli_url }}"
+  - name: Making wp-cli.phar executable
+    shell:
+      chdir: "{{ working_dir }}"
+      cmd: chmod +x wp-cli.phar
+  - name: Moving wp-cli.phar to "{{ wp_cli_bin_path }}"
+    shell:
+      chdir: "{{ working_dir }}"
+      cmd: sudo mv wp-cli.phar "{{ wp_cli_bin_path }}"
+
+  ##################################################
+  #                                                #
+  #   Python MySQL libraries installation need by  #
+  #   Ansible                                      #
+  ##################################################
+
+  - name: Install Python MySQL support libraries
+    yum:
+      name: MySQL-python
+      state: latest
+    tags: wp_step_2
+
+  ##################################################
+  #                                                #
+  #   MySQL database configuration                 #
+  #                                                #
+  ##################################################
+
+  - name: Create on account with username 'wordpress' on MariaDB
+    community.mysql.mysql_user:
+      name: "{{ mysql_wp_db_user }}"
+      password: "{{ mysql_wp_db_password }}"
+      priv: "{{ mysql_wp_user_privileges }}"
+      host: "%"
+      state: present
+      login_host: "{{ mysql_wp_db_host }}"
+      login_user: "{{ mysql_login_user }}"
+      login_password: "{{ mysql_root_password }}"
+    tags: wp_step_3
+  - name: Create a new database named 'wordpress'
+    community.mysql.mysql_db:
+      name: "{{ mysql_wp_db_name }}"
+      state: present
+      login_host: "{{ mysql_wp_db_host }}"
+      login_user: "{{ mysql_login_user }}"
+      login_password: "{{ mysql_root_password }}"
+    tags: wp_step_4
+
+  ##################################################
+  #                                                #
+  #   Wordpress CLI settings                       #
+  #                                                #
+  ##################################################
+
+  #- name: Copy file with owner and permissions
+  #  copy:
+  #    src: /home/centos/downloads/wordpress/wp-config-sample.php
+  #    dest: /home/centos/downloads/wordpress/wp-config.php
+  #    owner: "{{ wp_dir_owner }}"
+  #    group: "{{ wp_dir_group }}"
+  #    mode: '0774'
+  #    remote_src: yes
+  #  tags: wp_step_1
+
+  - name: Setting up Wordpress
+    shell:
+      chdir: "{{ working_dir }}"
+      cmd: /usr/local/bin/wp core install --url="{{ wp_url }}" --title="{{ wp_title }}" --admin_user="{{ wp_admin_user }}" --admin_password="{{ wp_admin_password }}" --admin_email="{{ wp_admin_email }}"
+    tags: wp_step_5

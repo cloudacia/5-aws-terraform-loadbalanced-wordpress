@@ -1,7 +1,0 @@
-#!/bin/bash
-
-sudo mkdir my_efs
-sudo chmod 777 /opt/my_efs
-sudo apt-get update -y
-sudo apt-get -y install nfs-common
-sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport $efs_dns_name:/ my_efs

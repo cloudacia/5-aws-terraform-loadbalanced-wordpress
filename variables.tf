@@ -71,7 +71,7 @@ variable "availability_zone02" {
 # UBUNTTU 16.04 AMI IMANGE
 variable "aws_amis" {
   type    = string
-  default = "ami-1d4e7a66"
+  default = "ami-0affd4508a5d2481b"
 }
 
 # AWS INSTANCE TYPE
@@ -95,13 +95,13 @@ variable "ec2_ssh_key" {
 # RDS ENGINE
 variable "rds_engine" {
   type    = string
-  default = "mysql"
+  default = "mariadb"
 }
 
 # RDS ENGINE VERSION
 variable "rds_engine_version" {
   type    = string
-  default = "5.7"
+  default = "10.5.13"
 }
 
 # RDS INSTANCE CLASS
@@ -119,11 +119,17 @@ variable "rds_db_name" {
 # RDS DB USERNAME
 variable "rds_db_username" {
   type    = string
-  default = "admin"
+  default = "root"
 }
 
 # RDS DB USERNAME
 variable "rds_db_password" {
   type    = string
   default = "password1234"
+}
+
+# HTTPD ROOT DIRECTORY
+variable "httpd_root_dir" {
+  type    = string
+  default = "/var/www/html/wordpress"
 }

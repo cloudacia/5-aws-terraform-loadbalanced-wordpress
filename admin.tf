@@ -16,9 +16,9 @@ resource "aws_security_group" "administration" {
   }
 
   ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "icmp"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -40,4 +40,13 @@ resource "aws_instance" "bastion" {
   ]
   subnet_id                   = aws_subnet.subnet01.id
   associate_public_ip_address = true
+
+  provisioner "local-exec" {
+    command     = "sleep 120; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u centos -i '${self.public_ip},' playbook.yml --extra-var 'efs_file_system_id=${aws_efs_file_system.wordpress-efs.dns_name} wp_url=${aws_cloudfront_distribution.alb_distribution.domain_name} mysql_wp_db_host=${aws_db_instance.wordpress_db.address}'"
+    working_dir = "ansible"
+  }
+
+  depends_on = [
+    aws_efs_file_system.wordpress-efs, aws_db_instance.wordpress_db
+  ]
 }

@@ -1,0 +1,98 @@
+---
+##################################################
+#                                                #
+#   PHP variables                                #
+#                                                #
+##################################################
+php_modules: [ 'php74-php',
+               'php74-php-fpm',
+               'php74-php-gd',
+               'php74-php-json',
+               'php74-php-mbstring',
+               'php74-php-mysqlnd',
+               'php74-php-xml',
+               'php74-php-xmlrpc',
+               'php74-php-opcache']
+
+php_remi_repo: "http://rpms.remirepo.net/enterprise/remi-release-7.rpm"
+php_src: "/usr/bin/php74"
+php_dest: "/usr/bin/php"
+
+##################################################
+#                                                #
+#   MysQL variables                                #
+#                                                #
+##################################################
+
+mysql_login_user: "root"
+mysql_root_password: "password1234"
+#mysql_user_privileges: "*.*:ALL,GRANT"
+
+##################################################
+#                                                #
+#   Wordpress variables for wp-config.php file   #
+#                                                #
+##################################################
+
+#disable_default: true
+mysql_wp_db_name: "wordpress"
+mysql_wp_db_user: "wordpress"
+mysql_wp_db_password: "wordpress"
+mysql_wp_user_privileges: "wordpress.*:USAGE,SELECT,INSERT,UPDATE,DELETE,CREATE,ALTER,DROP,INDEX"
+#mysql_wp_db_host: "localhost"
+
+##################################################
+#                                                #
+#   Apache configuraiton wp_file_src             #
+#                                                #
+##################################################
+
+apache_conf_template_file_src: "templates/httpd.conf.j2"
+apache_conf_template_file_dest: "/etc/httpd/conf/httpd.conf"
+
+##################################################
+#                                                #
+#   Apache variables for httpd.conf file         #
+#                                                #
+##################################################
+
+httpd_root_document: "/var/www/html/wordpress"
+httpd_error_log: "/var/log/httpd/cloudacia-error-log"
+httpd_access_log: "/var/log/httpd/cloudacia-access-log common"
+
+##################################################
+#                                                #
+#   Wordpress installation variables             #
+#                                                #
+##################################################
+
+wp_url_site: "http://wordpress.org/latest.tar.gz"
+wp_dest_path: "/home/centos/downloads/wordpress.tar.gz"
+wp_dir_mode: "0440"
+wp_file_src: "/home/centos/downloads/wordpress.tar.gz"
+wp_file_dest: "/home/centos/downloads/"
+wp_dir_owner: "apache"
+wp_dir_group: "apache"
+wp_conf_template_file_src: "templates/wp-config.php.j2"
+wp_conf_template_file_dest: "/home/centos/downloads/wordpress/wp-config.php"
+
+##################################################
+#                                                #
+#   Wordpress CLI installation                   #
+#                                                #
+##################################################
+
+working_dir: "/home/centos/downloads/wordpress"
+wp_cli_url: "https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar"
+wp_cli_bin_path: "/usr/local/bin/wp"
+
+##################################################
+#                                                #
+#   Wordpress setting variables                  #
+#                                                #
+##################################################
+
+wp_title: "Cloudacia DEMO"
+wp_admin_user: "admin"
+wp_admin_password: "admin"
+wp_admin_email: "admin@cloudacia.com"

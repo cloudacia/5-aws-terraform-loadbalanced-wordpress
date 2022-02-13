@@ -1,16 +1,16 @@
 # AWS S3 BUCKET
 resource "aws_s3_bucket" "bucket01" {
-  bucket = "s3-python-web-app-hello-world"
+  bucket = "cloudacia-apache-conf"
   acl    = "private"
   tags = {
-    Name = "Hello World App"
+    Name = "Wordpress"
   }
 }
 
 # AWS UPLOAD FILE TO S3 BUCKET
 resource "aws_s3_bucket_object" "object" {
   bucket = aws_s3_bucket.bucket01.id
-  key    = "http-server.py"
+  key    = "httpd.conf"
   acl    = "private"
-  source = "app/http-server.py"
+  source = "files/httpd.conf"
 }

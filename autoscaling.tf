@@ -1,5 +1,3 @@
-
-
 # AWS AUTO SCALING GROUP
 resource "aws_autoscaling_group" "as01" {
   vpc_zone_identifier  = [aws_subnet.subnet02.id, aws_subnet.subnet04.id]
@@ -11,6 +9,10 @@ resource "aws_autoscaling_group" "as01" {
   target_group_arns    = [aws_alb_target_group.alb_tg_webserver.arn]
   enabled_metrics      = ["GroupDesiredCapacity"]
   health_check_type    = "ELB"
+
+  depends_on = [
+    aws_instance.bastion
+  ]
 }
 
 # AWS AUTO SCALING POLICY UP
