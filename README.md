@@ -1,4 +1,4 @@
-# AWS Load Balanced Website + DNS + CDN + RDS + EFS
+# Wordpress Website on AWS Architecture Best Practices
 
 This project aims to deploy a sample website in a load-balanced, highly available, and resilient manner utilizing automation and AWS best practices.
 
@@ -76,8 +76,8 @@ Deploy the code in your AWS account with Terraform
 |-- rds.tf                  # MySQL
 |-- efs.tf                  # Share filesystem
 |-- output.tf               # Output values
-|-- /bootstraping            # Initialization script
-|-- /app                    # Simple Python web app
+|-- /bootstraping           # Initialization script
+|-- /ansible                # Ansible playbook
 |-- diagram.png             # AWS network layout
 |-- LICENSE.txt
 |-- README.md
