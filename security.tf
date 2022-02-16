@@ -1,5 +1,6 @@
-
-# AWS SECURITY GROUP FOR EC2 INSTANCES
+###############################################
+#  AWS SECURITY GROUP FOR EC2 INSTANCES       #
+###############################################
 resource "aws_security_group" "webserver" {
   name        = "webserver"
   description = "Allow incoming traffic to port 80/TCP"
@@ -23,7 +24,10 @@ resource "aws_security_group" "webserver" {
   }
 }
 
-# AWS SECURITY GROUP FOR THE LOAD BALANCER
+
+###############################################
+#  AWS SECURITY GROUP FOR THE LOAD BALANCER   #
+###############################################
 resource "aws_security_group" "alb" {
   name        = "alb"
   description = "Allow incoming traffic to port 80/TCP"
@@ -47,7 +51,9 @@ resource "aws_security_group" "alb" {
   }
 }
 
-# AWS SECURITY GROUP FOR EFS
+###############################################
+#  AWS SECURITY GROUP FOR EFS                 #
+###############################################
 resource "aws_security_group" "efs" {
   name        = "efs"
   description = "Allow incoming traffic to port 2049/TCP"
@@ -71,7 +77,9 @@ resource "aws_security_group" "efs" {
   }
 }
 
-# AWS SECURITY GROUP FOR RDS
+###############################################
+#  AWS SECURITY GROUP FOR RDS                 #
+###############################################
 resource "aws_security_group" "mysql_sg" {
   name        = "MySQL RDS"
   description = "Allow incoming traffic to port 3306/TCP"

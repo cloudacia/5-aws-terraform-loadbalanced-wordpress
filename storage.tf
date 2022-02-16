@@ -1,13 +1,17 @@
-# AWS S3 BUCKET
+###############################################
+#  AWS S3 BUCKET                              #
+###############################################
 resource "aws_s3_bucket" "bucket01" {
   bucket = "cloudacia-apache-conf"
-  acl    = "private"
+  #acl    = "private"
   tags = {
     Name = "Wordpress"
   }
 }
 
-# AWS UPLOAD FILE TO S3 BUCKET
+###############################################
+#  AWS UPLOAD FILE TO S3 BUCKET               #
+###############################################
 resource "aws_s3_bucket_object" "object" {
   bucket = aws_s3_bucket.bucket01.id
   key    = "httpd.conf"

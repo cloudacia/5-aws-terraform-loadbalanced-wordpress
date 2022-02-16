@@ -1,5 +1,7 @@
 
-# AWS CLOUDFRONT DISTRIBUTION
+###############################################
+#  AWS CLOUDFRONT DISTRIBUTION                #
+###############################################
 resource "aws_cloudfront_distribution" "alb_distribution" {
   depends_on = [
     aws_lb.alb01
@@ -20,8 +22,6 @@ resource "aws_cloudfront_distribution" "alb_distribution" {
       origin_read_timeout      = "30"
     }
   }
-
-  #aliases = ["www.cloudacia.net", "cloudacia.net"]
 
   default_cache_behavior {
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]

@@ -1,4 +1,6 @@
-# AWS AUTO SCALING GROUP
+###############################################
+# AWS AUTO SCALING GROUP                      #
+###############################################
 resource "aws_autoscaling_group" "as01" {
   vpc_zone_identifier  = [aws_subnet.subnet02.id, aws_subnet.subnet04.id]
   name                 = "as01"
@@ -15,7 +17,9 @@ resource "aws_autoscaling_group" "as01" {
   ]
 }
 
-# AWS AUTO SCALING POLICY UP
+###############################################
+# AWS AUTO SCALING POLICY UP                  #
+###############################################
 resource "aws_autoscaling_policy" "web_policy_up" {
   name                   = "web_policy_up"
   scaling_adjustment     = 2
@@ -24,7 +28,10 @@ resource "aws_autoscaling_policy" "web_policy_up" {
   autoscaling_group_name = aws_autoscaling_group.as01.id
 }
 
-# AWS AUTO SCALING POLICY DOWN
+
+###############################################
+#  AWS AUTO SCALING POLICY DOWN               #
+###############################################
 resource "aws_autoscaling_policy" "web_policy_down" {
   name                   = "web_policy_down"
   scaling_adjustment     = -2

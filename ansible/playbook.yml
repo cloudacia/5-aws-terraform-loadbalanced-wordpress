@@ -6,23 +6,21 @@
     - vars/default.yml
   tasks:
 
-  ##################################################
-  #                                                #
-  #   Mount EFS locally                            #
-  #                                                #
-  ##################################################
+  ###########################################################
+  #                                                         #
+  #   Mount EFS locally into the Bastion host filesystem    #
+  #                                                         #
+  ###########################################################
 
-  - name: Make directory downloads in /home/centos
+  - name: Creating the directory *downloads* in {{ working_dir }}
     file:
-      path: /home/centos/downloads
+      path: "{{ working_dir }}"
       state: directory
       mode: '0755'
-      #owner: centos
-      #group: centos
 
-  - name: Mount EFS into your local directory /home/centos/downloads
+  - name: Mounting AWS EFS into the directory {{ working_dir }}
     shell:
-      cmd: mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport {{ efs_file_system_id }}:/ /home/centos/downloads
+      cmd: mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport {{ efs_file_system_id }}:/ {{ working_dir }}
 
   ##################################################
   #                                                #
@@ -30,46 +28,42 @@
   #                                                #
   ##################################################
 
-  - name: Download Wordpress latest version
+  - name: Downloading latest version of Wordpress from the {{ wp_url_site }}
     get_url:
       url: "{{ wp_url_site }}"
       dest: "{{ wp_dest_path }}"
       mode: "{{ wp_dir_mode }}"
 
-  - name: Extract wordpress.tar.gz into /home/centos/downloads
+  - name: Extracting the wordpress.tar.gz file into {{ working_dir }}
     unarchive:
       src: "{{ wp_file_src }}"
       dest: "{{ wp_file_dest }}"
-      #owner: "{{ wp_dir_owner }}"
-      #group: "{{ wp_dir_group }}"
       remote_src: yes
 
-  - name:
+  - name: Adding a user account *apache* to the bastion host OS
     group:
       name: apache
       state: present
 
-  - name:
+  - name: Adding a user group *apache* to the bastion host OS
     user:
       name: apache
       group: apache
       shell: /sbin/nologin
       state: present
 
-  - name: Write the Wordpress configuration file
+  - name: Creating the Wordpress configuration file wp-config.php
     template:
       src: "{{ wp_conf_template_file_src }}"
       dest: "{{ wp_conf_template_file_dest }}"
-    #tags: wp_step_3
 
-  - name: Change permission on directory /home/centos/downloads/wordpress
+  - name: Changing directory's permission on {{ wp_working_dir }}
     file:
-      path: /home/centos/downloads/wordpress
+      path: "{{ wp_working_dir }}"
       owner: "{{ wp_dir_owner }}"
       group: "{{ wp_dir_group }}"
       mode: '0774'
       recurse: yes
-
 
   ##################################################
   #                                                #
@@ -77,16 +71,18 @@
   #                                                #
   ##################################################
 
-  - name: Install Remi Repository
+  - name: Installing Remi Repository on the bastion host
     yum:
       name: "{{ php_remi_repo }}"
       state: present
-  - name: Install PHP packages and libraries
+
+  - name: Installing PHP packages in the bastion host
     yum:
       name:  "{{ item }}"
       state: present
     loop: "{{ php_modules }}"
-  - name: Create a symbolic link
+
+  - name: Creating a symbolic link in the bastion host
     file:
       src: "{{ php_src }}"
       dest: "{{ php_dest }}"
@@ -101,17 +97,18 @@
   #                                                #
   ##################################################
 
-  - name: Downlading WP CLI
+  - name: Downlading WP CLI for Wordpress configuration
     shell:
-      chdir: "{{ working_dir }}"
+      chdir: "{{ wp_working_dir }}"
       cmd: curl -O "{{ wp_cli_url }}"
-  - name: Making wp-cli.phar executable
+
+  - name: Making wp-cli.phar file executable
     shell:
-      chdir: "{{ working_dir }}"
+      chdir: "{{ wp_working_dir }}"
       cmd: chmod +x wp-cli.phar
   - name: Moving wp-cli.phar to "{{ wp_cli_bin_path }}"
     shell:
-      chdir: "{{ working_dir }}"
+      chdir: "{{ wp_working_dir }}"
       cmd: sudo mv wp-cli.phar "{{ wp_cli_bin_path }}"
 
   ##################################################
@@ -120,11 +117,10 @@
   #   Ansible                                      #
   ##################################################
 
-  - name: Install Python MySQL support libraries
+  - name: Installing Python MySQL support libraries for handling MySQL/MariaDB configuration throught Ansible
     yum:
       name: MySQL-python
       state: latest
-    tags: wp_step_2
 
   ##################################################
   #                                                #
@@ -132,8 +128,8 @@
   #                                                #
   ##################################################
 
-  - name: Create on account with username 'wordpress' on MariaDB
-    community.mysql.mysql_user:
+  - name: Creating a user account *wordpress* in MySQL/MariaDB
+    mysql_user:
       name: "{{ mysql_wp_db_user }}"
       password: "{{ mysql_wp_db_password }}"
       priv: "{{ mysql_wp_user_privileges }}"
@@ -142,15 +138,14 @@
       login_host: "{{ mysql_wp_db_host }}"
       login_user: "{{ mysql_login_user }}"
       login_password: "{{ mysql_root_password }}"
-    tags: wp_step_3
-  - name: Create a new database named 'wordpress'
-    community.mysql.mysql_db:
+
+  - name: Creating a new database named *wordpress* in MySQL/MariaDB
+    mysql_db:
       name: "{{ mysql_wp_db_name }}"
       state: present
       login_host: "{{ mysql_wp_db_host }}"
       login_user: "{{ mysql_login_user }}"
       login_password: "{{ mysql_root_password }}"
-    tags: wp_step_4
 
   ##################################################
   #                                                #
@@ -158,18 +153,7 @@
   #                                                #
   ##################################################
 
-  #- name: Copy file with owner and permissions
-  #  copy:
-  #    src: /home/centos/downloads/wordpress/wp-config-sample.php
-  #    dest: /home/centos/downloads/wordpress/wp-config.php
-  #    owner: "{{ wp_dir_owner }}"
-  #    group: "{{ wp_dir_group }}"
-  #    mode: '0774'
-  #    remote_src: yes
-  #  tags: wp_step_1
-
-  - name: Setting up Wordpress
+  - name: Applying settings to Wordpress
     shell:
-      chdir: "{{ working_dir }}"
+      chdir: "{{ wp_working_dir }}"
       cmd: /usr/local/bin/wp core install --url="{{ wp_url }}" --title="{{ wp_title }}" --admin_user="{{ wp_admin_user }}" --admin_password="{{ wp_admin_password }}" --admin_email="{{ wp_admin_email }}"
-    tags: wp_step_5

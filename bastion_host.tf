@@ -1,5 +1,6 @@
-
-# AWS SECURTIY GROUP FOR THE BASTION HOST
+###############################################
+#  AWS SECURTIY GROUP FOR THE BASTION HOST    #
+###############################################
 resource "aws_security_group" "administration" {
   name        = "administration"
   description = "Allow default administration service"
@@ -15,13 +16,6 @@ resource "aws_security_group" "administration" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   egress {
     from_port   = 0
     to_port     = 0
@@ -30,7 +24,9 @@ resource "aws_security_group" "administration" {
   }
 }
 
-# AWS INSTANCE TO BE USED AS BASTION HOST
+###############################################
+#  AWS INSTANCE TO BE USED AS BASTION HOST    #
+###############################################
 resource "aws_instance" "bastion" {
   ami           = var.aws_amis
   instance_type = "t2.micro"
